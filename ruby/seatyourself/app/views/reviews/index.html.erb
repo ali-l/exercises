@@ -1,0 +1,5 @@
+<% @reviews.each do |review| %>
+	<div>
+	<%= review.restaurant.name %>, <%= review.customer.name %>, <%= review.restaurant.location %>,<%= review.title %>,<%= review.body %>, <%= review.created_at %>
+	</div>
+<% end %> 
