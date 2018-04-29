@@ -1,7 +1,0 @@
-<% if @pledge.errors.any? %>
-	$(".errors").text('Donation cannot be empty');
-<% else %>
-	$("#pledge-form").text('Pledge successful!');
-	$("#backers").text('Backers: '+ <%= @project.pledges.length %>);
-	$("#amount-raised").text('The amount raised: $'+<%= @project.amount_raised %>);
-<% end %>
