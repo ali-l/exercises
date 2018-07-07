@@ -24,4 +24,12 @@ describe SearchEngine do
       expect(subject.search('in lea')).to eq([document3])
     end
   end
+
+  describe '#add' do
+    it 'should add a document to the search engine' do
+      document = OpenStruct.new(name: 'mario kart')
+      subject.add(document)
+      expect(subject.search('mario')).to eq([document])
+    end
+  end
 end

@@ -42,10 +42,12 @@ class SearchEngine
     @index = Index.new
     @document_store = {}
 
-    documents&.each do |document|
-      @document_store[document.name] = document
-      @index.add(document.name, document.name)
-    end
+    documents&.each {|document| add(document)}
+  end
+
+  def add(document)
+    @document_store[document.name] = document
+    @index.add(document.name, document.name)
   end
 
   def search(text)
