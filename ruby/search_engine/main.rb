@@ -18,14 +18,18 @@ class Index
 end
 
 class SearchEngine
-  def initialize(seed)
+  def initialize(documents)
     @index = Index.new
+    @document_store = {}
 
-    seed.each do |text|
-      text
+    documents.each do |document|
+      @document_store[document.name] = document
+
+      document
+          .name
           .downcase
           .split
-          .map {|word| @index.add(text, word)}
+          .map {|word| @index.add(document.name, word)}
     end
   end
 
@@ -35,6 +39,8 @@ class SearchEngine
                   .split
                   .map {|word| @index.find(word)}
 
-    results.reduce(results.first, :&)
+    results
+        .reduce(results.first, :&)
+        .map { |id| @document_store[id] }
   end
 end
