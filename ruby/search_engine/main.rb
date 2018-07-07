@@ -3,17 +3,27 @@ class Index
     @string_map = {}
   end
 
-  def add(text, word)
-    (1..word.length).each do |length|
-      word.chars.each_cons(length) do |strings|
-        (@string_map[strings.join] ||= []) << text
-        @string_map[strings.join].uniq!
-      end
-    end
+  def add(id, text)
+    text
+        .downcase
+        .split
+        .map {|word| add_word(id, word)}
   end
 
   def find(word)
     @string_map[word]
+  end
+
+  private
+
+  def add_word(id, word)
+    (1..word.length).each do |length|
+      word.chars.each_cons(length) do |strings|
+        (@string_map[strings.join] ||= []) << id
+
+        @string_map[strings.join].uniq!
+      end
+    end
   end
 end
 
@@ -24,12 +34,7 @@ class SearchEngine
 
     documents.each do |document|
       @document_store[document.name] = document
-
-      document
-          .name
-          .downcase
-          .split
-          .map {|word| @index.add(document.name, word)}
+      @index.add(document.name, document.name)
     end
   end
 
@@ -41,6 +46,6 @@ class SearchEngine
 
     results
         .reduce(results.first, :&)
-        .map { |id| @document_store[id] }
+        .map {|id| @document_store[id]}
   end
 end
