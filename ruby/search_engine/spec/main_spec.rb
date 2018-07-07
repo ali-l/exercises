@@ -23,6 +23,10 @@ describe SearchEngine do
       expect(subject.search('of lord')).to eq([document1, document2])
       expect(subject.search('in lea')).to eq([document3])
     end
+
+    it 'should handle no documents being found' do
+      expect(subject.search('abc')).to eq([])
+    end
   end
 
   describe '#add' do

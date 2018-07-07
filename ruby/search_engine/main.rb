@@ -15,9 +15,9 @@ class Index
                   .downcase
                   .split
                   .map {|word| find_word(word)}
+                  .compact
 
-    results
-        .reduce(results.first, :&)
+    results.reduce(results.first, :&)
   end
 
   private
@@ -51,8 +51,6 @@ class SearchEngine
   end
 
   def search(text)
-    @index
-        .find(text)
-        .map {|id| @document_store[id]}
+    @index.find(text)&.map {|id| @document_store[id]} || []
   end
 end
