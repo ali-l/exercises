@@ -38,11 +38,11 @@ class Index
 end
 
 class SearchEngine
-  def initialize(documents)
+  def initialize(documents = nil)
     @index = Index.new
     @document_store = {}
 
-    documents.each do |document|
+    documents&.each do |document|
       @document_store[document.name] = document
       @index.add(document.name, document.name)
     end
