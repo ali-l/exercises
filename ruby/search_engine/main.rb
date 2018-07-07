@@ -10,11 +10,21 @@ class Index
         .map {|word| add_word(id, word)}
   end
 
-  def find(word)
-    @string_map[word]
+  def find(text)
+    results = text
+                  .downcase
+                  .split
+                  .map {|word| find_word(word)}
+
+    results
+        .reduce(results.first, :&)
   end
 
   private
+
+  def find_word(word)
+    @string_map[word]
+  end
 
   def add_word(id, word)
     (1..word.length).each do |length|
@@ -38,14 +48,9 @@ class SearchEngine
     end
   end
 
-  def search(phrase)
-    results = phrase
-                  .downcase
-                  .split
-                  .map {|word| @index.find(word)}
-
-    results
-        .reduce(results.first, :&)
+  def search(text)
+    @index
+        .find(text)
         .map {|id| @document_store[id]}
   end
 end
