@@ -1,56 +1,64 @@
 class Index
   def initialize
-    @string_map = {}
+    @terms = {}
   end
 
-  def add(id, text)
+  def add(text, id)
     text
-        .downcase
-        .split
-        .map {|word| add_word(id, word)}
+      .downcase
+      .split
+      .flat_map { |word| terms(word) }
+      .uniq
+      .tap { |terms| add_terms(terms, id) }
   end
 
   def find(text)
-    results = text
-                  .downcase
-                  .split
-                  .map {|word| find_word(word)}
-                  .compact
-
-    results.reduce(results.first, :&)
+    text
+      .downcase
+      .split
+      .map { |word| find_word(word) }
+      .reduce(:&)
   end
 
   private
 
   def find_word(word)
-    @string_map[word]
+    @terms[word] || []
   end
 
-  def add_word(id, word)
-    (1..word.length).each do |length|
-      word.chars.each_cons(length) do |strings|
-        (@string_map[strings.join] ||= []) << id
+  def add_terms(terms, id)
+    terms.each { |term| (@terms[term] ||= Set.new) << id }
+  end
 
-        @string_map[strings.join].uniq!
-      end
-    end
+  def terms(word)
+    chars = word.chars
+
+    (1..word.length).flat_map { |term_length| terms_of_length(term_length, chars) }
+  end
+
+  def terms_of_length(length, chars)
+    chars
+      .each_cons(length)
+      .map(&:join)
   end
 end
 
 class SearchEngine
-  def initialize(documents = nil)
+  def initialize(seed_documents = [])
     @index = Index.new
-    @document_store = {}
+    @documents = {}
 
-    documents&.each {|document| add(document)}
+    seed_documents.each { |document| add(document) }
   end
 
   def add(document)
-    @document_store[document.name] = document
+    @documents[document.name] = document
     @index.add(document.name, document.name)
   end
 
   def search(text)
-    @index.find(text)&.map {|id| @document_store[id]} || []
+    @index
+      .find(text)
+      .map { |id| @documents[id] }
   end
 end
