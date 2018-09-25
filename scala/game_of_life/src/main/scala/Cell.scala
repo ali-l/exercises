@@ -1,12 +1,14 @@
-class Cell(row: Int, col: Int, sendMessage: Message => _) {
+class Cell(row: Int, col: Int, sendMessage: Message => Unit) {
   private var neighbourCount = 0
-  var alive = false
+  private var alive = false
+
+  def isAlive: Boolean = alive
 
   override def toString: String = s"Cell - alive:$alive, neighbourCount:$neighbourCount, row:$row, col:$col\n"
 
   def setAlive(state: Boolean): Unit = {
     alive = state
-    sendMessage(Message(row, col, alive))
+    broadcastLivingState()
   }
 
   def processMessage(message: Message): Unit = {
@@ -14,12 +16,26 @@ class Cell(row: Int, col: Int, sendMessage: Message => _) {
   }
 
   def updateLivingState(): Unit = {
-    if (alive && (neighbourCount > 3 || neighbourCount < 2)) {
-      alive = false
-      sendMessage(Message(row, col, alive))
-    } else if (!alive && neighbourCount == 3) {
-      alive = true
-      sendMessage(Message(row, col, alive))
+    if (shouldDie) {
+      die()
+    } else if (shouldBecomeAlive) {
+      becomeAlive()
     }
   }
+
+  private def becomeAlive(): Unit = {
+    alive = true
+    broadcastLivingState()
+  }
+
+  private def die(): Unit = {
+    alive = false
+    broadcastLivingState()
+  }
+
+  private def broadcastLivingState(): Unit = sendMessage(Message(row, col, alive))
+
+  private def shouldBecomeAlive = !alive && neighbourCount == 3
+
+  private def shouldDie = alive && (neighbourCount > 3 || neighbourCount < 2)
 }

@@ -16,7 +16,7 @@ class Grid(val cells: IndexedSeq[Cell], size: Int, flushMessages: () => List[Mes
   def seed(n: Int): Unit = {
     for (_ <- 0 until n) {
       val index = Random.nextInt(cells.length)
-      if (!cells(index).alive) cells(index).setAlive(state = true)
+      if (!cells(index).isAlive) cells(index).setAlive(true)
     }
 
     distributeMessages()
@@ -57,7 +57,5 @@ class Grid(val cells: IndexedSeq[Cell], size: Int, flushMessages: () => List[Mes
     )
   }
 
-  private def coordsToIndex(row: Int, col: Int) = {
-    row * size + col
-  }
+  private def coordsToIndex(row: Int, col: Int) = row * size + col
 }

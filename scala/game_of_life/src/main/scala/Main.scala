@@ -1,6 +1,5 @@
 object Main extends App {
-  val messageQueue = new MessageQueue()
-  val grid = Grid.create(3, messageQueue)
+  val grid = Grid.create(3, new MessageQueue())
 
   grid.seed(3)
   println(grid)
